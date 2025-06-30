@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <title>Itaalia Pitsa Taigna Ajakava</title>
+    <style>
+        body {
+          font-family: 'Arial', sans-serif;
+          background-color: #fff8f0;
+          color: #333;
+          margin: 0;
+          padding: 20px;
+        }
+        header {
+          background: linear-gradient(to right, #008000, #ffffff, #ff0000);
+          color: #000;
+          padding: 20px;
+          text-align: center;
+        }
+        h1 {
+          font-size: 2em;
+          margin: 0;
+        }
+        .container {
+          max-width: 600px;
+          margin: 20px auto;
+          padding: 20px;
+          border: 2px solid #ccc;
+          border-radius: 10px;
+          background-color: #fff;
+        }
+        label, input, button {
+          font-size: 1em;
+          margin-top: 10px;
+          display: block;
+          width: 100%;
+        }
+        button {
+          background-color: #ff0000;
+          color: white;
+          border: none;
+          padding: 10px;
+          border-radius: 5px;
+          margin-top: 20px;
+          cursor: pointer;
+        }
+        .schedule {
+          margin-top: 20px;
+        }
+        .stage {
+          margin-bottom: 10px;
+          padding: 10px;
+          background-color: #f9f9f9;
+          border-left: 5px solid #008000;
+        }
+        .recipe {
+          margin-top: 40px;
+        }
+        .recipe p {
+          margin: 0.5em 0;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>🍕 Itaalia Pitsa Taigna Ajakava</h1>
+</header>
+<div class="container">
+    <label for="pizzaTime">Mis kell tahad pitsa valmistamisega alustada?</label>
+    <input type="time" id="pizzaTime">
+    <button onclick="generateSchedule()">Genereeri ajakava</button>
+    <div class="schedule" id="schedule"></div>
+</div>
+
+<div class="container recipe">
+    <label for="ballCount">Mitu taignapalli soovid teha?</label>
+    <input type="number" id="ballCount" value="4" min="1">
+    <button onclick="generateRecipe()">Näita retsepti</button>
+    <div class="schedule" id="recipe"></div>
+</div>
+
+<script>
+    function formatTime(date) {
+      return date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    }
+
+    function generateSchedule() {
+      const input = document.getElementById('pizzaTime').value;
+      if (!input) return;
+
+      const now = new Date();
+      const [hours, minutes] = input.split(":").map(Number);
+      const pizzaTime = new Date(now);
+      pizzaTime.setHours(hours, minutes, 0, 0);
+
+      const schedule = [
+        { name: "🔥 Kuumuta pitsaahi", offset: 45 },
+        { name: "🍞 Vormi väikesed taignapallid", offset: 60 },
+        { name: "🥣 Sega juuretis jahu ja veega", offset: 150 },
+        { name: "❄️ Võta juuretis külmkapist välja", offset: 210 }
+      ];
+
+      const container = document.getElementById('schedule');
+      container.innerHTML = '<h3>Sinu pitsa ettevalmistuse ajakava:</h3>';
+
+      schedule.reverse().forEach(stage => {
+        const time = new Date(pizzaTime.getTime() - stage.offset * 60000);
+        const stageDiv = document.createElement('div');
+        stageDiv.className = 'stage';
+        stageDiv.textContent = `${formatTime(time)} – ${stage.name}`;
+        container.appendChild(stageDiv);
+      });
+    }
+
+    function generateRecipe() {
+      const count = parseInt(document.getElementById('ballCount').value) || 4;
+      const factor = count / 4;
+      const r = id => document.getElementById(id);
+
+      const juuretis = `Juuretis (valmistada eelmisel päeval):<br>
+        - ${Math.round(200 * factor)}g vett<br>
+        - ${Math.round(5 * factor)}g mett<br>
+        - ${Math.round(5 * factor)}g pärmi<br>
+        - ${Math.round(200 * factor)}g 00 jahu<br>
+        Sega ja lase seista 15 min avatud kaanega. Seejärel 1h suletud kaanega. Hoida külmkapis 16–24 tundi.`;
+
+      const taigen = `Taigen:<br>
+        - ${Math.round(300 * factor)}g vett<br>
+        - ${Math.round(20 * factor)}g soola<br>
+        - ${Math.round(300 * factor)}g leivajahu (12–14% valku)<br>
+        - ${Math.round(200 * factor)}g 00 jahu<br>
+        Sega vesi ja sool. Lisa jahud, sõtku 15–20 min. Patsuta oliiviõliga ja lase 15 min puhata.<br>
+        Vormi suur pall, voldi sisse, patsuta oliiviõliga. Hoia 1h rätiku all.<br>
+        Jaga ${count} palliks, voldi sisse, lase 1h seista enne küpsetamist.`;
+
+      const container = document.getElementById('recipe');
+      container.innerHTML = `<h3>Pitsa taigna retsept (${count} pallile):</h3><div class="stage">${juuretis}</div><div class="stage">${taigen}</div>`;
+    }
+</script>
+</body>
+</html>
